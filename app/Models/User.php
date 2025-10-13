@@ -6,8 +6,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasName;
+use Filament\Panel;
 
-class User extends Authenticatable
+
+class User extends Authenticatable implements FilamentUser, HasName
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -18,9 +22,17 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'code',
+        'first_name',
+        'last_name',
+        'company_name',
+        'job_title',
+        'phone',
         'email',
         'password',
+        'is_vip',
+        'is_legal',
+        'is_foreign',
     ];
 
     /**
@@ -41,8 +53,22 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'phone_verified_at' => 'datetime',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_vip' => 'boolean',
+            'is_legal' => 'boolean',
+            'is_foreign' => 'boolean',
         ];
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->email == 'admin@local.tld';
+    }
+
+    public function getFilamentName(): string
+    {
+        return "{$this->first_name} {$this->last_name}";
     }
 }
