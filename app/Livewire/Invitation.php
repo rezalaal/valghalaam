@@ -32,6 +32,8 @@ class Invitation extends Component
     public $job_title;
     public $user;
 
+    public $invited_by;
+
     public function mount()
     {
         $data = ['code' => request()->code];
@@ -46,7 +48,8 @@ class Invitation extends Component
 
         $user = User::where('code', $data['code'])->first();
         if($user) {
-            $this->referrer = $user->first_name . ' ' . $user->last_name;            
+            $this->referrer = $user->first_name . ' ' . $user->last_name;      
+            $this->invited_by = $user->id;      
         }else{
             $this->error = 1;
         }
@@ -124,9 +127,10 @@ class Invitation extends Component
                 'job_title' => $this->job_title,
                 'phone' => $this->phone,
                 'email' => $this->email,
-                'password' => Hash::make($this->password),
+                'password' => $this->password,
                 'is_legal' => $this->is_legal,
-                'is_foreign' => $this->is_foreign
+                'is_foreign' => $this->is_foreign,
+                'invited_by' => $this->invited_by
             ]);
             $this->success(" با موفقیت ثبت شد");
             $this->step = 4;

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Users\Schemas;
 
 use App\Models\User;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Fieldset;
@@ -38,13 +39,38 @@ class UserForm
                             TextInput::make('code')
                                 ->unique(table: User::class)
                                 ->rule('integer'),
+                            Select::make('invited_by')
+                                ->label('معرف')
+                                ->options(function ($search) {
+                                    // جستجو روی شماره تلفن، نام و نام خانوادگی
+                                    return User::query()
+                                        ->when($search, function ($query, $search) {
+                                            $query->where('phone', 'like', "%{$search}%")
+                                                ->orWhere('first_name', 'like', "%{$search}%")
+                                                ->orWhere('last_name', 'like', "%{$search}%");
+                                        })
+                                        ->limit(50) // محدودیت تعداد برای سرعت بهتر
+                                        ->get()
+                                        ->mapWithKeys(function ($user) {
+                                            $label = trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''));
+                                            $phone = $user->phone ?? '—';
+                                            $display = $label ? "{$phone} — {$label}" : $phone;
+                                            return [$user->id => $display];
+                                        })
+                                        ->toArray();
+                                })
+                                ->searchable()
+                                ->preload(false)
+                                ->nullable(),
                             TextInput::make('phone')
                                 ->regex('/^09\d{9}$/')
                                 ->unique(table: User::class)
                                 ->required(),
                             TextInput::make('password')
                                 ->password()
-                                ->required(),
+                                ->dehydrateStateUsing(fn($state) => filled($state) ? bcrypt($state) : null)
+                                ->dehydrated(fn($state) => filled($state))
+                                ->required(fn(string $operation) => $operation === 'create'),
                         ])->from('md')
                 ])->columnSpanFull(),
                 Section::make('Fields')

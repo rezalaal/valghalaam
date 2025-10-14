@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
-
+use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable implements FilamentUser, HasName
 {
@@ -33,6 +33,7 @@ class User extends Authenticatable implements FilamentUser, HasName
         'is_vip',
         'is_legal',
         'is_foreign',
+        'invited_by'
     ];
 
     /**
@@ -64,11 +65,29 @@ class User extends Authenticatable implements FilamentUser, HasName
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->email == 'admin@local.tld';
+        return strtolower($this->email) === 'admin@local.tld';
     }
 
     public function getFilamentName(): string
     {
         return "{$this->first_name} {$this->last_name}";
     }
+
+    public function setPasswordAttribute($value)
+    {
+        if(filled($value)) {
+            $this->attributes['password'] = Hash::make($value);
+        }
+    }
+
+    public function inviter()
+    {
+        return $this->belongsTo(User::class, 'invited_by');
+    }
+
+    public function invitees()
+    {
+        return $this->hasMany(User::class, 'invited_by');
+    }
+
 }

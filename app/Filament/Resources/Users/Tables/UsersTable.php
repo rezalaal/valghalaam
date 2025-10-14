@@ -21,6 +21,15 @@ class UsersTable
             ->columns([
                 TextColumn::make('code')
                     ->searchable(),
+                TextColumn::make('inviter.first_name')
+                ->label('دعوت‌کننده')
+                ->formatStateUsing(fn ($state, $record) =>
+                    $record->inviter
+                        ? $record->inviter->first_name . ' ' . $record->inviter->last_name
+                        : '—'
+                )
+                ->sortable()
+                ->searchable(),
                 TextColumn::make('first_name')
                     ->searchable(),
                 TextColumn::make('last_name')
