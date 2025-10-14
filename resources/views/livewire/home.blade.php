@@ -1,6 +1,5 @@
-<div class="grid grid-cols-1 lg:grid-cols-3 mt-8 font-vazir font-light" dir="rtl">
-    <div></div>
-    <div>
+<div class="grid grid-cols-1 lg:grid-cols-5 mt-8 font-vazir font-light" dir="rtl">
+    <div class="mx-8">
         <x-form wire:submit="invite">
             <x-input label="کد معرف" wire:model="inviteCode" />
             <x-slot:actions>
@@ -8,6 +7,8 @@
             </x-slot:actions>
         </x-form>
     </div>
-    <div></div>
+    <div class="mx-8 col-span-4 mt-4">
+        <livewire:ambassadors>
+    </div>
 </div>
 
