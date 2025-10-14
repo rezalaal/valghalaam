@@ -1,12 +1,20 @@
 <header class="bg-ghalam text-4xl  text-black flex justify-between items-center px-4">
     <a href="/">
-        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-24 h-24">
+        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-16 h-16">
     </a>
-    <div class="font-vazir font-light text-sm lg:text-3xl lg:font-extrabold">
+    <div class="lg:hidden flex flex-col justify-center items-center gap-0 p-0">
+        <p class="text-sm text-center font-lalezar">
+            نٓ وَٱلْقَلَمِ وَمَا يَسْطُرُونَ    
+        </p>
+        <div class="font-vazir font-light text-sm">
+            پویش رانندگی بین خطوط
+        </div>
+    </div>
+    <div class="font-vazir font-light text-sm lg:text-3xl lg:font-extrabold hidden lg:block">
         پویش رانندگی بین خطوط
     </div>
     <div class="flex items-center">
-        <p class="text-sm lg:text-xl text-center font-lalezar p-8 ">
+        <p class="text-sm lg:text-xl text-center font-lalezar p-8 hidden lg:block">
             نٓ وَٱلْقَلَمِ وَمَا يَسْطُرُونَ    
         </p>
         <label class="toggle text-base-content">
