@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users\Schemas;
 
+use App\Models\User;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -35,8 +36,11 @@ class UserForm
                     ->schema([
                         Flex::make([
                             TextInput::make('code')
+                                ->unique(table: User::class)
                                 ->rule('integer'),
                             TextInput::make('phone')
+                                ->regex('/^09\d{9}$/')
+                                ->unique(table: User::class)
                                 ->required(),
                             TextInput::make('password')
                                 ->password()
@@ -58,6 +62,7 @@ class UserForm
                             
                             TextInput::make('email')
                                 ->label('Email address')
+                                ->unique(table: User::class)
                                 ->email(),
                         ])->from('md'),
                         
