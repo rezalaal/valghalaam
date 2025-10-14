@@ -2,7 +2,7 @@
     "platform": "laravel",
     "app": "valghalam",
     "laravel": {
-        "phpVersion": "8.2",
+        "phpVersion": "8.3",
         "buildAssets": false,
         "configCache": true,
         "timezone": "Asia/Tehran"
