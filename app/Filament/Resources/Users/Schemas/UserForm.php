@@ -116,6 +116,15 @@ class UserForm
                             TextInput::make('company_name')
                                 ->visible(fn(Get $get) => $get('is_legal')),
                             TextInput::make('job_title'),
+                            Select::make('gender_id')
+                                ->label('جنسیت')
+                                ->options([
+                                    1 => 'مرد',
+                                    2 => 'زن',
+                                ])
+                                ->nullable()
+                                ->searchable(false)
+                                ->placeholder('انتخاب کنید'),
                         ])->from('md'),
                         Flex::make([
                             
