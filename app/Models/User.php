@@ -33,7 +33,8 @@ class User extends Authenticatable implements FilamentUser, HasName
         'is_vip',
         'is_legal',
         'is_foreign',
-        'invited_by'
+        'invited_by',
+        'city_id'
     ];
 
     /**
@@ -88,6 +89,11 @@ class User extends Authenticatable implements FilamentUser, HasName
     public function invitees()
     {
         return $this->hasMany(User::class, 'invited_by');
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(IranCity::class);
     }
 
 }

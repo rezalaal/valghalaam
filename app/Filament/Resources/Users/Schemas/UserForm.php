@@ -3,15 +3,17 @@
 namespace App\Filament\Resources\Users\Schemas;
 
 use App\Models\User;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Components\Fieldset;
-use Filament\Schemas\Components\Flex;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
+use App\Models\IranCity;
+use App\Models\IranProvince;
 use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Flex;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Schemas\Components\Utilities\Get;
 
 class UserForm
 {
@@ -32,7 +34,38 @@ class UserForm
                                 ->label('Foreign')
                                 ->live(), 
                         ])                          
-                ])->columnSpanFull(),
+                ])                
+                ->columnSpanFull(),
+                Section::make('Location')
+                    ->schema([
+                        Flex::make([
+                            Select::make('province')
+                                ->label('استان')
+                                ->options(IranProvince::all()->pluck('name', 'id')->toArray())
+                                ->reactive() 
+                                ->afterStateUpdated(function ($state, callable $set) {
+                                    $set('city', null);
+                                })
+                                ->required(),
+
+                            Select::make('city')
+                                ->label('شهر')
+                                ->options(function (callable $get) {
+                                    $provinceId = $get('province');
+                                    if (!$provinceId) {
+                                        return [];
+                                    }
+                                    return IranCity::where('province_id', $provinceId)
+                                        ->pluck('name', 'id')
+                                        ->toArray();
+                                })
+                                ->required()
+                                ->disabled(fn (callable $get) => !$get('province')), // وقتی استان انتخاب نشده، غیر فعال باشد
+                        ])->from('md'),
+                    ])
+                    ->hidden(fn(Get $get) => $get('is_foreign'))
+                    ->columnSpanFull(),
+                
                 Section::make('Necessary Fields')
                     ->schema([
                         Flex::make([

@@ -35,7 +35,22 @@
                     @else
                         <x-input class="px-1" label="نام" prefix="0" wire:model="first_name" placeholder="نام" />  
                         <x-input class="px-1" label=" نام خانوادگی" prefix="0" wire:model="last_name" placeholder="نام خانوادگی" /> 
-                    @endif              
+                    @endif    
+                    @if(!$is_foreign)          
+                        <x-select
+                            label="استان"
+                            wire:model.live="province"
+                            :options="$provinces"
+                            option-value="id"
+                            option-label="name" 
+                        />
+                        <x-select
+                            label="شهر"
+                            wire:model="city"
+                            :options="$cities"
+                            option-value="id"
+                            option-label="name" />
+                    @endif
                     <x-input class="px-1" label=" عنوان شغلی" prefix="0" wire:model="job_title" placeholder="عنوان شغلی" />
                     <x-input class="px-1" label="  ایمیل" prefix="0" wire:model="email" placeholder="ایمیل " />
                     <x-password class="px-1" label="کلمه عبور" placeholder="کلمه عبور" wire:model="password" clearable  required/>

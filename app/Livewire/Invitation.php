@@ -3,9 +3,11 @@
 namespace App\Livewire;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Livewire\Component;
 use Mary\Traits\Toast;
+use Livewire\Component;
+use App\Models\IranCity;
+use App\Models\IranProvince;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class Invitation extends Component
@@ -20,7 +22,7 @@ class Invitation extends Component
     public $referrer;
 
     public $phone;
-    public $email;
+    public $email = null;
 
     public $is_legal = false;
     public $is_foreign = false;
@@ -34,6 +36,11 @@ class Invitation extends Component
 
     public $invited_by;
 
+    public $provinces;
+    public $province;
+    public $cities = [];
+    public $city=null;
+
     public function mount()
     {
         $data = ['code' => request()->code];
@@ -46,6 +53,7 @@ class Invitation extends Component
             $this->error = 1; // کد معرف نامعتبر است            
         }
 
+        $this->provinces = IranProvince::all();
         $user = User::where('code', $data['code'])->first();
         if($user) {
             $this->referrer = $user->first_name . ' ' . $user->last_name;      
@@ -55,6 +63,12 @@ class Invitation extends Component
         }
 
         
+    }
+
+    public function updatedProvince($value)
+    {
+        info($value);
+        $this->cities = IranCity::where('province_id', $value)->get();
     }
 
     public function goToStep2()
@@ -130,12 +144,15 @@ class Invitation extends Component
                 'password' => $this->password,
                 'is_legal' => $this->is_legal,
                 'is_foreign' => $this->is_foreign,
-                'invited_by' => $this->invited_by
+                'invited_by' => $this->invited_by,
+                'city_id' => $this->city
+
             ]);
             $this->success(" با موفقیت ثبت شد");
             $this->step = 4;
         }catch(\Exception $e) {
             info($e->getMessage());
+
             $this->error('خطا در ثبت سفیر');
         }
         
