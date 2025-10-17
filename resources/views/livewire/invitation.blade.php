@@ -1,4 +1,10 @@
 <div class="p-8 font-vazir font-xs font-light" dir="rtl">
+    @php
+    $gender = [
+            ['id' => 1 , 'gender' => 'مرد', 'hint' => 'مرد'],
+            ['id' => 2 , 'gender' => 'زن' , 'hint' => 'زن']
+        ];
+    @endphp
     <x-steps wire:model="step" class="border-y border-base-content/10 my-5 py-5">
         <x-step step="1" text="بررسی معرف" class="font-bold">
             <div class="mt-4">
@@ -27,7 +33,7 @@
             <x-form wire:submit="register">
                 <div class="flex gap-2">
                     <x-toggle label="شخصیت حقوقی هستم" wire:model.live="is_legal"/>
-                    <x-toggle label="خارج از کشور هستم" wire:model="is_foreign"/>
+                    <x-toggle label="خارج از کشور هستم" wire:model.live="is_foreign"/>
                 </div>
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-2">
                     @if($is_legal)
@@ -35,6 +41,7 @@
                     @else
                         <x-input class="px-1" label="نام" prefix="0" wire:model="first_name" placeholder="نام" />  
                         <x-input class="px-1" label=" نام خانوادگی" prefix="0" wire:model="last_name" placeholder="نام خانوادگی" /> 
+                        <x-radio label="جنسیت" wire:model="gender_id" :options="$gender" inline />
                     @endif    
                     @if(!$is_foreign)          
                         <x-select
@@ -46,7 +53,7 @@
                         />
                         <x-select
                             label="شهر"
-                            wire:model="city"
+                            wire:model="city_id"
                             :options="$cities"
                             option-value="id"
                             option-label="name" />

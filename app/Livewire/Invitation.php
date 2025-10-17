@@ -39,7 +39,8 @@ class Invitation extends Component
     public $provinces;
     public $province;
     public $cities = [];
-    public $city=null;
+    public $city_id = NULL;
+    public $gender_id = NULL;
 
     public function mount()
     {
@@ -111,23 +112,51 @@ class Invitation extends Component
             [
                 'phone' => $this->phone,
                 'password' => $this->password,
-                'confirm' => $this->confirm
+                'confirm' => $this->confirm,
+                'email' => $this->email,
+                'first_name' => $this->first_name,
+                'last_name' => $this->last_name,
+                'company_name' => $this->company_name,
+                'job_title' => $this->job_title,
+                'is_legal' => $this->is_legal,
+                'is_foreign' => $this->is_foreign,
+                'invited_by' => $this->invited_by,
+                'city_id' => $this->city_id,
+                'gender_id' => $this->gender_id,
             ],
             [
                 'phone' => ['required', 'regex:/^09\d{9}$/'],
                 'password' => ['required', 'min:3'],
-                'confirm' => ['required', 'min:3', 'confirmed:password']
+                'confirm' => ['required', 'min:3', 'same:password'],
+                'email' => ['nullable', 'email', 'max:255', 'unique:users,email'],
+                'first_name' => ['nullable', 'string', 'min:2', 'max:50'],
+                'last_name' => ['nullable', 'string', 'min:2', 'max:50'],
+                'company_name' => ['nullable', 'string', 'max:100'],
+                'job_title' => ['nullable', 'string', 'max:100'],
+                'is_legal' => ['nullable', 'boolean'],
+                'is_foreign' => ['nullable', 'boolean'],
+                'invited_by' => ['nullable', 'exists:users,id'],
+                'city_id' => ['nullable', 'exists:iran_cities,id'],
+                'gender_id' => ['nullable', 'integer', 'in:1,2'],
             ],
             [
                 'phone.required' => 'شماره تلفن الزامی است.',
                 'phone.regex' => 'شماره باید ۱۱ رقم و با ۰۹ شروع شود.',
-                'password.required' => 'کلمه عبور الزامی است',
-                'password.min' => 'کلمه عبور باید بیشتر از دو حرف باشد',
-                'confirm.required' => 'تکرار کلمه عبور الزامی است',
-                'confirm.min' => 'تکرار کلمه عبور باید بیشتر از دو حرف باشد',
-                'confirm.confirmed' => 'کلمه عبور با تکرارش همخوانی ندارد',
+                'password.required' => 'کلمه عبور الزامی است.',
+                'password.min' => 'کلمه عبور باید بیشتر از دو حرف باشد.',
+                'confirm.required' => 'تکرار کلمه عبور الزامی است.',
+                'confirm.min' => 'تکرار کلمه عبور باید بیشتر از دو حرف باشد.',
+                'confirm.same' => 'کلمه عبور با تکرارش همخوانی ندارد.',
+                'email.unique' => 'ایمیل قبلا ثبت شده است',
+                'email.email' => 'ایمیل وارد شده معتبر نیست.',
+                'first_name.min' => 'نام باید حداقل ۲ حرف باشد.',
+                'last_name.min' => 'نام خانوادگی باید حداقل ۲ حرف باشد.',
+                'invited_by.exists' => 'کاربر معرف معتبر نیست.',
+                'city_id.exists' => 'شناسه شهر معتبر نیست.',
+                'gender_id.in' => 'جنسیت انتخاب شده معتبر نیست.',
             ]
         );
+
 
         if ($validated->fails()) {
             $this->error($validated->errors()->first());
@@ -145,15 +174,14 @@ class Invitation extends Component
                 'is_legal' => $this->is_legal,
                 'is_foreign' => $this->is_foreign,
                 'invited_by' => $this->invited_by,
-                'city_id' => $this->city
+                'city_id' => $this->city_id,
+                'gender_id' => $this->gender_id,
 
             ]);
             $this->success(" با موفقیت ثبت شد");
             $this->step = 4;
         }catch(\Exception $e) {
-            info($e->getMessage());
-
-            $this->error('خطا در ثبت سفیر');
+            $this->error($e->getMessage());
         }
         
     }

@@ -34,7 +34,8 @@ class User extends Authenticatable implements FilamentUser, HasName
         'is_legal',
         'is_foreign',
         'invited_by',
-        'city_id'
+        'city_id',
+        'gender_id'
     ];
 
     /**
