@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Enums\Education;
 use App\Models\User;
 use Mary\Traits\Toast;
 use Livewire\Component;
@@ -42,6 +43,9 @@ class Invitation extends Component
     public $city_id = NULL;
     public $gender_id = NULL;
 
+    public $education;
+    public $education_id;
+
     public function mount()
     {
         $data = ['code' => request()->code];
@@ -55,6 +59,8 @@ class Invitation extends Component
         }
 
         $this->provinces = IranProvince::all();
+        $this->education = Education::all();
+        
         $user = User::where('code', $data['code'])->first();
         if($user) {
             $this->referrer = $user->first_name . ' ' . $user->last_name;      
@@ -123,6 +129,7 @@ class Invitation extends Component
                 'invited_by' => $this->invited_by,
                 'city_id' => $this->city_id,
                 'gender_id' => $this->gender_id,
+                'education' => $this->education_id,
             ],
             [
                 'phone' => ['required', 'regex:/^09\d{9}$/'],
@@ -138,6 +145,7 @@ class Invitation extends Component
                 'invited_by' => ['nullable', 'exists:users,id'],
                 'city_id' => ['nullable', 'exists:iran_cities,id'],
                 'gender_id' => ['nullable', 'integer', 'in:1,2'],
+                'education' => ['nullable', 'integer', 'in:0,1,2,3,4'],
             ],
             [
                 'phone.required' => 'شماره تلفن الزامی است.',
@@ -154,6 +162,8 @@ class Invitation extends Component
                 'invited_by.exists' => 'کاربر معرف معتبر نیست.',
                 'city_id.exists' => 'شناسه شهر معتبر نیست.',
                 'gender_id.in' => 'جنسیت انتخاب شده معتبر نیست.',
+                'education.in' => 'تحصیلات انتخاب شده معتبر نیست',
+                'education.integer' => 'کد تحصیلات نامعتبر است'
             ]
         );
 
@@ -162,6 +172,7 @@ class Invitation extends Component
             $this->error($validated->errors()->first());
             return;
         }
+
         try {
             $this->user = User::firstOrCreate([
                 'first_name' => $this->first_name,
@@ -176,6 +187,7 @@ class Invitation extends Component
                 'invited_by' => $this->invited_by,
                 'city_id' => $this->city_id,
                 'gender_id' => $this->gender_id,
+                'education' => $this->education_id
 
             ]);
             $this->success(" با موفقیت ثبت شد");

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Users\Schemas;
 
 use App\Models\User;
+use App\Enums\Education;
 use App\Models\IranCity;
 use App\Models\IranProvince;
 use Filament\Schemas\Schema;
@@ -125,6 +126,11 @@ class UserForm
                                 ->nullable()
                                 ->searchable(false)
                                 ->placeholder('انتخاب کنید'),
+                        Select::make('education')
+                            ->label('تحصیلات')
+                            ->options(Education::options())
+                            ->nullable()
+                            ->placeholder('انتخاب کنید'),
                         ])->from('md'),
                         Flex::make([
                             

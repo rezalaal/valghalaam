@@ -42,6 +42,14 @@
                         <x-input class="px-1" label="نام" prefix="0" wire:model="first_name" placeholder="نام" />  
                         <x-input class="px-1" label=" نام خانوادگی" prefix="0" wire:model="last_name" placeholder="نام خانوادگی" /> 
                         <x-radio label="جنسیت" wire:model="gender_id" :options="$gender" inline />
+                        <x-select
+                            label="تحصیلات"
+                            wire:model="education_id"
+                            :options="$education"
+                            option-value="id"
+                            option-label="name" 
+                            placeholder="تحصیلات"
+                        />
                     @endif    
                     @if(!$is_foreign)          
                         <x-select

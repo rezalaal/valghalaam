@@ -10,6 +10,8 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
 use Illuminate\Support\Facades\Hash;
+use App\Enums\Education;
+
 
 class User extends Authenticatable implements FilamentUser, HasName
 {
@@ -35,7 +37,8 @@ class User extends Authenticatable implements FilamentUser, HasName
         'is_foreign',
         'invited_by',
         'city_id',
-        'gender_id'
+        'gender_id',
+        'education'
     ];
 
     /**
@@ -96,5 +99,13 @@ class User extends Authenticatable implements FilamentUser, HasName
     {
         return $this->belongsTo(IranCity::class);
     }
+
+    public function getEducationLabelAttribute(): ?string
+    {
+        return $this->education !== null
+            ? Education::from($this->education)->label()
+            : null;
+    }
+
 
 }
