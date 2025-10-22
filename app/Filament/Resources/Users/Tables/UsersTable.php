@@ -20,6 +20,7 @@ class UsersTable
             ->modifyQueryUsing(fn (Builder $query) => $query->orderBy('id', 'DESC'))
             ->columns([
                 TextColumn::make('code')
+                    ->label('کد سفیر')
                     ->searchable(),
                 TextColumn::make('inviter.first_name')
                 ->label('دعوت‌کننده')
@@ -31,37 +32,43 @@ class UsersTable
                 ->sortable()
                 ->searchable(),
                 TextColumn::make('first_name')
+                    ->label('نام')
                     ->searchable(),
                 TextColumn::make('last_name')
+                    ->label('نام خانوادگی')
                     ->searchable(),
                 TextColumn::make('phone')
+                    ->label('همراه')
                     ->searchable(),
                 TextColumn::make('email')
-                    ->label('Email address')
+                    ->label('ایمیل')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('email_verified_at')
-                    ->dateTime()
+                    ->label('تاریخ تایید ایمیل')
+                    ->formatStateUsing(fn ($state) => $state ? (verta($state))->format('Y/m/d') : '-')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('تاریخ ایجاد')
+                    ->formatStateUsing(fn ($state) => $state ? (verta($state))->format('Y/m/d') : '-')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('تاریخ ویرایش')
+                    ->formatStateUsing(fn ($state) => $state ? (verta($state))->format('Y/m/d') : '-')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Filter::make('is_legal')
-                    ->label('Legal')
+                    ->label('شخصیت حقوقی')
                     ->query(fn(Builder $query) => $query->where('is_legal', true)),
                 Filter::make('is_vip')
-                    ->label('Vip')
+                    ->label('سفیر ویژه')
                     ->query(fn(Builder $query) => $query->where('is_vip', true)),
                 Filter::make('is_foreign')
-                    ->label('Foreign')
+                    ->label('خارج از کشور')
                     ->query(fn(Builder $query) => $query->where('is_foreign', true))
             ], layout: FiltersLayout::AboveContent)  
             ->recordActions([

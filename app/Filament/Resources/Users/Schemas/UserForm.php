@@ -15,6 +15,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Forms\Components\Radio;
 
 class UserForm
 {
@@ -22,22 +23,30 @@ class UserForm
     {
         return $schema
             ->components([
-                Section::make('Choices')
+                Section::make('تعیین وضعیت')
                     ->schema([
                         Flex::make([                            
                             Toggle::make('is_legal')
-                                ->label('Legal')
+                                ->label('شخصیت حقوقی')
                                 ->live(),
                             Toggle::make('is_vip')
-                                ->label('VIP')
+                                ->label('سفیر ویژه')
                                 ->live(),
                             Toggle::make('is_foreign')
-                                ->label('Foreign')
-                                ->live(), 
+                                ->label('خارج از کشور')
+                                ->live(),                         
+                            Radio::make('gender_id')
+                                ->label('جنسیت')
+                                ->options([
+                                    1 => 'مرد',
+                                    2 => 'زن',
+                                ])
+                                ->inline()
+
                         ])                          
                 ])                
                 ->columnSpanFull(),
-                Section::make('Location')
+                Section::make('استان و شهر و تحصیلات')
                     ->schema([
                         Flex::make([
                             Select::make('province')
@@ -61,16 +70,22 @@ class UserForm
                                         ->toArray();
                                 })
                                 ->required()
-                                ->disabled(fn (callable $get) => !$get('province')), // وقتی استان انتخاب نشده، غیر فعال باشد
+                                ->disabled(fn (callable $get) => !$get('province')),
+                            Select::make('education')
+                                ->label('تحصیلات')
+                                ->options(Education::options())
+                                ->default(fn ($record) => $record?->education?->value)
+                                ->required(),
                         ])->from('md'),
                     ])
                     ->hidden(fn(Get $get) => $get('is_foreign'))
                     ->columnSpanFull(),
                 
-                Section::make('Necessary Fields')
+                Section::make('اطلاعات ضروری')
                     ->schema([
                         Flex::make([
                             TextInput::make('code')
+                                ->label('کد سفیر')
                                 ->unique(table: User::class)
                                 ->rule('integer'),
                             Select::make('invited_by')
@@ -97,26 +112,31 @@ class UserForm
                                 ->preload(false)
                                 ->nullable(),
                             TextInput::make('phone')
+                                ->label('همراه')
                                 ->regex('/^09\d{9}$/')
                                 ->unique(table: User::class)
                                 ->required(),
                             TextInput::make('password')
+                                ->label('کلمه عبور')
                                 ->password()
                                 ->dehydrateStateUsing(fn($state) => filled($state) ? bcrypt($state) : null)
                                 ->dehydrated(fn($state) => filled($state))
                                 ->required(fn(string $operation) => $operation === 'create'),
                         ])->from('md')
                 ])->columnSpanFull(),
-                Section::make('Fields')
+                Section::make('مشخصات اصلی')
                     ->schema([
                         Flex::make([
                             TextInput::make('first_name')
+                                ->label('نام')
                                 ->hidden(fn(Get $get) => $get('is_legal')),
                             TextInput::make('last_name')
+                                ->label('نام خانوادگی')
                                 ->hidden(fn(Get $get) => $get('is_legal')),
                             TextInput::make('company_name')
+                                ->label('نام شرکت')
                                 ->visible(fn(Get $get) => $get('is_legal')),
-                            TextInput::make('job_title'),
+                            TextInput::make('job_title')->label('عنوان شغلی'),
                             Select::make('gender_id')
                                 ->label('جنسیت')
                                 ->options([
@@ -135,18 +155,18 @@ class UserForm
                         Flex::make([
                             
                             TextInput::make('email')
-                                ->label('Email address')
+                                ->label('ایمیل')
                                 ->unique(table: User::class)
                                 ->email(),
                         ])->from('md'),
                         
                 ])->columnSpanFull(),
                 
-                Section::make('Verification Fields')
+                Section::make('تایید')
                     ->schema([
                         Flex::make([
-                            DateTimePicker::make('phone_verified_at'),
-                            DateTimePicker::make('email_verified_at'),
+                            DateTimePicker::make('phone_verified_at')->label('تاریخ تایید همراه')->jalali(),
+                            DateTimePicker::make('email_verified_at')->label('تاریخ تایید ایمیل')->jalali(),
                         ])
                 ])->columnSpanFull(),
             ]);

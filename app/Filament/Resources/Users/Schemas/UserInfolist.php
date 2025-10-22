@@ -11,21 +11,29 @@ class UserInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('name'),
-                TextEntry::make('phone'),
+                TextEntry::make('first_name')
+                    ->label('نام'),
+                TextEntry::make('last_name')
+                    ->label('نام خانوادگی'),
+                TextEntry::make('phone')
+                    ->label('همراه'),
                 TextEntry::make('email')
-                    ->label('Email address'),
+                    ->label('ایمیل'),
                 TextEntry::make('phone_verified_at')
-                    ->dateTime()
+                    ->label('تاریخ تایید همراه')
+                    ->formatStateUsing(fn ($state) => $state ? (verta($state))->format('Y/m/d') : '-')
                     ->placeholder('-'),
                 TextEntry::make('email_verified_at')
-                    ->dateTime()
+                    ->label('تاریخ تایید ایمیل')
+                    ->formatStateUsing(fn ($state) => $state ? (verta($state))->format('Y/m/d') : '-')
                     ->placeholder('-'),
                 TextEntry::make('created_at')
-                    ->dateTime()
+                    ->label('تاریخ ایجاد')
+                    ->formatStateUsing(fn ($state) => $state ? (verta($state))->format('Y/m/d') : '-')
                     ->placeholder('-'),
                 TextEntry::make('updated_at')
-                    ->dateTime()
+                    ->label('تاریخ ویرایش')
+                    ->formatStateUsing(fn ($state) => $state ? (verta($state))->format('Y/m/d') : '-')
                     ->placeholder('-'),
             ]);
     }

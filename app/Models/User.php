@@ -61,6 +61,7 @@ class User extends Authenticatable implements FilamentUser, HasName
         return [
             'phone_verified_at' => 'datetime',
             'email_verified_at' => 'datetime',
+            'education' => \App\Enums\Education::class,
             'password' => 'hashed',
             'is_vip' => 'boolean',
             'is_legal' => 'boolean',

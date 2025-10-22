@@ -16,15 +16,19 @@ class CampaignsTable
         return $table
             ->columns([
                 TextColumn::make('title')
+                    ->label('عنوان')
                     ->searchable(),
-                TextColumn::make('summary')
+                TextColumn::make('توضیحات مختصر')
+                    ->label('توضیحات')
                     ->searchable(),
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('تاریخ ایجاد')
+                    ->formatStateUsing(fn ($state) => $state ? (verta($state))->format('Y/m/d') : '-')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('تاریخ ویرایش')
+                    ->formatStateUsing(fn ($state) => $state ? (verta($state))->format('Y/m/d') : '-')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

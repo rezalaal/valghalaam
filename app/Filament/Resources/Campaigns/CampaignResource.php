@@ -20,9 +20,26 @@ class CampaignResource extends Resource
 {
     protected static ?string $model = Campaign::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMegaphone;
 
     protected static ?string $recordTitleAttribute = 'title';
+
+    protected static ?string $pluralModelLabel = 'پویش ها';
+
+    protected static ?string $modelLabel = 'پویش';
+
+
+
+    public static function getNavigationLabel(): string
+    {
+        return 'پویش';
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
 
     public static function form(Schema $schema): Schema
     {

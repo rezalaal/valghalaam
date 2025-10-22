@@ -13,9 +13,12 @@ class CampaignForm
         return $schema
             ->components([
                 TextInput::make('title')
+                    ->label('عنوان')
                     ->required(),
-                TextInput::make('summary'),
+                TextInput::make('summary')
+                ->label('توضیحات مختصر'),
                 Textarea::make('description')
+                    ->label('توضیحات مبسوط')
                     ->columnSpanFull(),
             ]);
     }
