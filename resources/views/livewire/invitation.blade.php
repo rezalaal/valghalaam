@@ -10,7 +10,7 @@
             <div class="mt-4">
                 <h3>ثبت نام</h3>
                 @if ($error == 1)
-                    <x-alert title="توجه!" description="کد معرف وجود ندارد. امکان ثبت نام بدون کد معرف وجود ندارد" icon="o-shield-exclamation" class="alert-warning mt-4" />
+                    <x-alert title="توجه!" description="کد معرف نامعتبر است؛ ثبت‌نام فقط با کد معتبر امکان دارد." icon="o-shield-exclamation" class="alert-warning mt-4" />
                 @else
                     @if ($referrer)
                         <x-alert title="خوش آمدید!" description="شما توسط {{ $referrer }}  به این پویش دعوت شده اید. جهت عضویت و فعالیت در این پویش مراحل ثبت نام را طی کنید" icon="o-shield-exclamation" class="alert-success mt-4" />
@@ -29,52 +29,58 @@
                 </x-form>
             @endif
         </x-step>
-        <x-step step="3" text="مشخصات">
-            <x-form wire:submit="register">
-                <div class="flex gap-2">
-                    <x-toggle label="شخصیت حقوقی هستم" wire:model.live="is_legal"/>
-                    <x-toggle label="خارج از کشور هستم" wire:model.live="is_foreign"/>
-                </div>
-                <div class="grid grid-cols-1 lg:grid-cols-4 gap-2">
-                    @if($is_legal)
-                        <x-input class="px-1" label=" نام شرکت" prefix="0" wire:model="company_name" placeholder="نام شرکت" />
-                    @else
-                        <x-input class="px-1" label="نام" prefix="0" wire:model="first_name" placeholder="نام" />  
-                        <x-input class="px-1" label=" نام خانوادگی" prefix="0" wire:model="last_name" placeholder="نام خانوادگی" /> 
-                        <x-radio label="جنسیت" wire:model="gender_id" :options="$gender" inline />
-                        <x-select
-                            label="تحصیلات"
-                            wire:model="education_id"
-                            :options="$education"
-                            option-value="id"
-                            option-label="name" 
-                            placeholder="تحصیلات"
-                        />
-                    @endif    
-                    @if(!$is_foreign)          
-                        <x-select
-                            label="استان"
-                            wire:model.live="province"
-                            :options="$provinces"
-                            option-value="id"
-                            option-label="name" 
-                        />
-                        <x-select
-                            label="شهر"
-                            wire:model="city_id"
-                            :options="$cities"
-                            option-value="id"
-                            option-label="name" />
-                    @endif
-                    <x-input class="px-1" label=" عنوان شغلی" prefix="0" wire:model="job_title" placeholder="عنوان شغلی" />
-                    <x-input class="px-1" label="  ایمیل" prefix="0" wire:model="email" placeholder="ایمیل " />
-                    <x-password class="px-1" label="کلمه عبور" placeholder="کلمه عبور" wire:model="password" clearable  required/>
-                    <x-password class="px-1" label="تکرار کلمه عبور" placeholder="تکرار کلمه عبور" wire:model="confirm" clearable required/>
-                    <x-button label="ثبت نام" class="btn-primary lg:w-32 lg:mt-[2.2rem]" type="submit" spinner="save3"/>
-                </div>
+        <x-step step="3" text="تخصیص رمز">            
+            <x-form wire:submit="checkPassword" class="grid grid-cols-1 lg:grid-cols-4">
+                <x-password class="px-1" label="کلمه عبور" placeholder="کلمه عبور" wire:model="password" clearable  required/>
+                <x-password class="px-1" label="تکرار کلمه عبور" placeholder="تکرار کلمه عبور" wire:model="confirm" clearable required/>
+                <x-button label="بررسی" class="btn-primary lg:w-32 lg:mt-[2.2rem]" type="submit" spinner="save3"/>
             </x-form>
         </x-step>
-        <x-step step="4" text="پایان">
+        <x-step step="4" text="وضعیت">            
+            <x-form wire:submit="checkStatus" class="grid grid-cols-1 lg:grid-cols-4">
+                <x-toggle label="شخصیت حقوقی هستم" wire:model="is_legal"/>
+                <x-toggle label="خارج از کشور هستم" wire:model="is_foreign"/>
+                <x-button label="بررسی" class="btn-primary lg:w-32 lg:mt-[2.2rem]" type="submit" spinner="save3"/>
+            </x-form>
+        </x-step>
+        <x-step step="5" text="مشخصات">
+            <x-form wire:submit="register">        
+                @if($is_legal)                        
+                    <x-input class="px-1" label=" نام شرکت" prefix="0" wire:model="company_name" placeholder="نام شرکت" />
+                @else
+                    <x-input class="px-1" label="نام" prefix="0" wire:model="first_name" placeholder="نام" />  
+                    <x-input class="px-1" label=" نام خانوادگی" prefix="0" wire:model="last_name" placeholder="نام خانوادگی" /> 
+                    <x-radio label="جنسیت" wire:model="gender_id" :options="$gender" inline />
+                    <x-select
+                        label="تحصیلات"
+                        wire:model="education_id"
+                        :options="$education"
+                        option-value="id"
+                        option-label="name" 
+                        placeholder="تحصیلات"
+                    />
+                @endif    
+                @if(!$is_foreign)          
+                    <x-select
+                        label="استان"
+                        wire:model.live="province"
+                        :options="$provinces"
+                        option-value="id"
+                        option-label="name" 
+                    />
+                    <x-select
+                        label="شهر"
+                        wire:model="city_id"
+                        :options="$cities"
+                        option-value="id"
+                        option-label="name" />
+                @endif            
+                <x-input class="px-1" label=" عنوان شغلی" prefix="0" wire:model="job_title" placeholder="عنوان شغلی" />
+                <x-input class="px-1" label="  ایمیل" prefix="0" wire:model="email" placeholder="ایمیل " />            
+                <x-button label="ثبت نام" class="btn-primary lg:w-32 lg:mt-[2.2rem]" type="submit" spinner="save3"/>            
+            </x-form>            
+        </x-step>
+        <x-step step="6" text="پایان">
             @if ($user)
             <x-card title="ثبت نام با موفقیت انجام شد" subtitle="عضویت شما طی ۷۲ ساعت آینده بررسی و تایید خواهد شد" shadow separator>
                 <h1>{{ $user->first_name }} {{ $user->last_name }}</h1>

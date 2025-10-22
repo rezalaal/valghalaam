@@ -25,6 +25,8 @@ class Invitation extends Component
     public $phone;
     public $email = null;
 
+    public $tabSelected = 'password-tab';
+
     public $is_legal = false;
     public $is_foreign = false;
     public $password;
@@ -83,6 +85,40 @@ class Invitation extends Component
         if($this->referrer && $this->error == 0) {
             $this->step = 2;
         }
+    }
+
+    public function checkPassword()
+    {
+        $validated = Validator::make(
+            [
+                'password' => $this->password,
+                'confirm' => $this->confirm,                
+            ],
+            [
+                'password' => ['required', 'min:3'],
+                'confirm' => ['required', 'min:3', 'same:password'],                
+            ],
+            [
+                'password.required' => 'کلمه عبور الزامی است.',
+                'password.min' => 'کلمه عبور باید بیشتر از دو حرف باشد.',
+                'confirm.required' => 'تکرار کلمه عبور الزامی است.',
+                'confirm.min' => 'تکرار کلمه عبور باید بیشتر از دو حرف باشد.',
+                'confirm.same' => 'کلمه عبور با تکرارش همخوانی ندارد.',               
+            ]
+        );
+
+
+        if ($validated->fails()) {
+            $this->error($validated->errors()->first());
+            return;
+        }
+
+        $this->step = 4;
+    }
+
+    public function checkStatus()
+    {
+        $this->step = 5;
     }
 
     public function checkPhone()
@@ -191,7 +227,7 @@ class Invitation extends Component
 
             ]);
             $this->success(" با موفقیت ثبت شد");
-            $this->step = 4;
+            $this->step = 6;
         }catch(\Exception $e) {
             $this->error($e->getMessage());
         }
