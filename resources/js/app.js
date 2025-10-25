@@ -1,19 +1,25 @@
 import './bootstrap';
 
 document.addEventListener('DOMContentLoaded', () => {
-    let currentTheme = localStorage.getItem('theme')
-    document.querySelector("body").setAttribute('data-theme', currentTheme)
-})
+    const body = document.body;
+    const root = document.documentElement;
+    
+    
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    console.log(savedTheme)
+    Livewire.dispatch('setThemeFromJs',{savedTheme: savedTheme});
+    applyTheme(savedTheme);
 
-Livewire.on("toggle-theme", () => {
-    let currentTheme = localStorage.getItem('theme')
+    Livewire.on('toggle-theme', () => {
+        const newTheme = (localStorage.getItem('theme') === 'dark') ? 'light' : 'dark';
+        applyTheme(newTheme);
+        Livewire.dispatch('setThemeFromJs',{savedTheme: newTheme});
+    });
 
-    if (currentTheme == 'dark') {
-        document.querySelector("body").setAttribute('data-theme', 'light')
-        localStorage.setItem('theme', 'light')
-    }else{
-        document.querySelector("body").setAttribute('data-theme', 'dark')
-        localStorage.setItem('theme', 'dark')
+    function applyTheme(theme) {
+        body.setAttribute('data-theme', theme);
+        root.classList.toggle('dark', theme === 'dark');
+        root.classList.toggle('light', theme === 'light');
+        localStorage.setItem('theme', theme);
     }
-
-})
+});
