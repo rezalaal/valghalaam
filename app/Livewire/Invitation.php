@@ -201,7 +201,13 @@ class Invitation extends Component
         if($this->user && $this->avatar) {
             $user = User::find($this->user['id']);
             $user->clearMediaCollection('avatar');
-            $user->addMedia($this->avatar)->toMediaCollection('avatar');
+            try {
+                info("uploading avatar . . . ");
+                $user->addMedia($this->avatar)->toMediaCollection('avatar');
+            }catch(Exception $e){
+                info("error: ".$e->getMessage());
+            }
+            
         }        
     }
 
