@@ -29,7 +29,7 @@
                 </div>
             </x-file>
         </div>
-        <x-button label="مرحله بعدی" class="btn-primary lg:w-32 lg:mt-[2.2rem]" type="submit" spinner="save3"/>
+        <x-button label="مرحله بعدی" class="btn-primary lg:w-32 lg:mt-[2.2rem]" type="submit" spinner="checkStatus"/>
     </x-form>
     @endauth       
 </div>

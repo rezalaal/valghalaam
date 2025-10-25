@@ -8,7 +8,7 @@
         @if ($referrer)
             <x-alert title="خوش آمدید!" description="شما توسط {{ $referrer }} به این پویش دعوت شده اید. جهت عضویت و فعالیت در این پویش مراحل ثبت نام را طی کنید" icon="o-globe-alt" class="alert-success mt-4" />
             <div class="flex items-center gap-4">
-                <x-button label="مرحله بعد" class="btn-primary mt-4" type="submit" spinner="save3" wire:click='goToStep2'/>            
+                <x-button label="مرحله بعد" class="btn-primary mt-4" type="submit" spinner="step" wire:click='goToStep2'/>            
                 <x-button label="بازگشت" class="mt-4" link="/" />
             </div>
         @else

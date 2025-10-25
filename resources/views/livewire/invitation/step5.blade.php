@@ -44,7 +44,7 @@
         @endif            
         <x-input class="px-1" label=" عنوان شغلی" prefix="0" wire:model="job_title" placeholder="عنوان شغلی" />
         <x-input class="px-1" label="  ایمیل" prefix="0" wire:model="email" placeholder="ایمیل " />            
-        <x-button label="ثبت نام" class="btn-primary lg:w-32 lg:mt-[2.2rem]" type="submit" spinner="save3"/>            
+        <x-button label="ثبت نام" class="btn-primary lg:w-32 lg:mt-[2.2rem]" type="submit" spinner="register"/>            
     </x-form> 
     @endauth       
 </div>
