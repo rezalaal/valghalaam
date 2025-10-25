@@ -11,12 +11,16 @@ use Filament\Models\Contracts\HasName;
 use Filament\Panel;
 use Illuminate\Support\Facades\Hash;
 use App\Enums\Education;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\Image\Enums\Fit;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-
-class User extends Authenticatable implements FilamentUser, HasName
+class User extends Authenticatable implements FilamentUser, HasName, HasMedia
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
+    use InteractsWithMedia;
 
     /**
      * The attributes that are mass assignable.
@@ -62,12 +66,25 @@ class User extends Authenticatable implements FilamentUser, HasName
             'phone_verified_at' => 'datetime',
             'email_verified_at' => 'datetime',
             'education' => \App\Enums\Education::class,
-            'password' => 'hashed',
             'is_vip' => 'boolean',
             'is_legal' => 'boolean',
             'is_foreign' => 'boolean',
         ];
     }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this
+            ->addMediaConversion('avatar')
+            ->fit(Fit::Contain, 300, 300)
+            ->nonQueued();
+    }
+
+    public function getAuthIdentifierName()
+    {        
+        return 'phone';
+    }
+
 
     public function canAccessPanel(Panel $panel): bool
     {

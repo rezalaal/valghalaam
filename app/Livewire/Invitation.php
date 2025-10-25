@@ -2,35 +2,40 @@
 
 namespace App\Livewire;
 
+use App\Data\UserData;
 use App\Enums\Education;
+use App\Jobs\UpdateUserJob;
 use App\Models\User;
+use App\Services\LoginUserByPhoneService;
+use Livewire\WithFileUploads;
 use Mary\Traits\Toast;
 use Livewire\Component;
 use App\Models\IranCity;
 use App\Models\IranProvince;
+use App\Services\FindReferrerService;
+use App\Services\FindUserByPhoneService;
+use App\Services\UpdateUserService;
+use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class Invitation extends Component
 {
     use Toast;
+    use WithFileUploads;
     public $id;
 
-    public $step = 1;
-
-    public $error = 0;
+    public $step = 1;    
 
     public $referrer;
 
     public $phone;
     public $email = null;
-
-    public $tabSelected = 'password-tab';
-
     public $is_legal = false;
     public $is_foreign = false;
     public $password;
-    public $confirm;
+    public $password_confirmation;
     public $first_name;
     public $last_name;
     public $company_name;
@@ -40,7 +45,7 @@ class Invitation extends Component
     public $invited_by;
 
     public $provinces;
-    public $province;
+    public $province_id;
     public $cities = [];
     public $city_id = NULL;
     public $gender_id = NULL;
@@ -48,71 +53,48 @@ class Invitation extends Component
     public $education;
     public $education_id;
 
-    public function mount()
+    public $avatar;
+
+    public function mount($code, FindReferrerService $findReferrer)
     {
-        $data = ['code' => request()->code];
+        $this->referrer = $findReferrer->handle($code);
+        $this->invited_by = $code;        
+    }        
 
-        $validator = Validator::make($data, [
-            'code' => ['required', 'integer', 'exists:users,code'],
-        ]);
-
-        if ($validator->fails()) {
-            $this->error = 1; // کد معرف نامعتبر است            
-        }
-
-        $this->provinces = IranProvince::all();
-        $this->education = Education::all();
-        
-        $user = User::where('code', $data['code'])->first();
-        if($user) {
-            $this->referrer = $user->first_name . ' ' . $user->last_name;      
-            $this->invited_by = $user->id;      
-        }else{
-            $this->error = 1;
-        }
-
-        
-    }
-
-    public function updatedProvince($value)
+    public function updatedProvinceId($value)
     {
         info($value);
         $this->cities = IranCity::where('province_id', $value)->get();
     }
 
+    public function updatedEducationId($value)
+    {
+        info($value);
+    }
+
     public function goToStep2()
     {
-        if($this->referrer && $this->error == 0) {
+        if($this->referrer) {
             $this->step = 2;
         }
     }
 
-    public function checkPassword()
+    public function checkPassword(LoginUserByPhoneService $service)
     {
-        $validated = Validator::make(
-            [
-                'password' => $this->password,
-                'confirm' => $this->confirm,                
-            ],
-            [
-                'password' => ['required', 'min:3'],
-                'confirm' => ['required', 'min:3', 'same:password'],                
-            ],
-            [
-                'password.required' => 'کلمه عبور الزامی است.',
-                'password.min' => 'کلمه عبور باید بیشتر از دو حرف باشد.',
-                'confirm.required' => 'تکرار کلمه عبور الزامی است.',
-                'confirm.min' => 'تکرار کلمه عبور باید بیشتر از دو حرف باشد.',
-                'confirm.same' => 'کلمه عبور با تکرارش همخوانی ندارد.',               
-            ]
-        );
+        $result = $service->create([
+            'phone' => $this->phone,
+            'password' => $this->password,
+            'password_confirmation' => $this->password_confirmation,
+            'invited_by' => $this->invited_by
+        ]);        
 
-
-        if ($validated->fails()) {
-            $this->error($validated->errors()->first());
+        if (!$result['success']) {
+            $this->error($result['message']);
             return;
         }
 
+        $this->prepareUserDTO($result['user']);  
+        
         $this->step = 4;
     }
 
@@ -121,121 +103,110 @@ class Invitation extends Component
         $this->step = 5;
     }
 
-    public function checkPhone()
+    public function checkPhone(FindUserByPhoneService $service)
     {
-        $validated = Validator::make(
-            ['phone' => $this->phone],
-            ['phone' => ['required', 'regex:/^09\d{9}$/']],
-            [
-                'phone.required' => 'شماره تلفن الزامی است.',
-                'phone.regex' => 'شماره باید ۱۱ رقم و با ۰۹ شروع شود.',
-            ]
-        );
+        $result = $service->handle($this->phone);
 
-        if ($validated->fails()) {
-            $this->error($validated->errors()->first('phone'));
+        if (!$result['success']) {
+            $this->error($result['message']);
+            return;
+        }
+        
+        if ($result['user']) {
+            $this->prepareUserDTO($result['user']);       
+        } 
+        
+        $this->step = 3;
+    }
+
+    public function prepareUserDTO(UserData $userData)
+    {
+
+        $this->user = $userData->toArray();
+
+        $this->is_legal = $userData->is_legal;
+        $this->is_foreign = $userData->is_foreign;
+        $this->avatar = $userData->avatar;
+        $this->id = $userData->id;
+        $this->first_name = $userData->first_name;
+        $this->last_name = $userData->last_name;
+        $this->company_name = $userData->company_name;
+        $this->job_title = $userData->job_title;
+        $this->phone = $userData->phone;
+        $this->email = $userData->email;
+        $this->is_legal = $userData->is_legal;
+        $this->is_foreign = $userData->is_foreign;
+        $this->avatar = $userData->avatar;
+        $this->city_id = $userData->city_id;
+        $this->gender_id = $userData->gender_id;
+        // $this->education = $userData->education;
+        $this->provinces = IranProvince::all();
+        $this->education = Education::all();
+    }
+
+    public function login(LoginUserByPhoneService $service)
+    {
+        $result = $service->handle([            
+            'phone' => $this->user['phone'],
+            'password' => $this->password,
+        ]);        
+
+        if (!$result['success']) {
+            $this->error($result['message']);
             return;
         }
 
-        // 2️⃣ بررسی وجود در دیتابیس
-        $exists = User::where('phone', $this->phone)->exists();
-
-        if ($exists) {
-            $this->error = 2; // کاربر قبلا ثبت نام کرده است
-        } else {
-            $this->step = 3;
-        }
-
+        $this->user = $result['user'];
+        $this->step = 4;
     }
 
     public function register()
     {
-        $validated = Validator::make(
-            [
-                'phone' => $this->phone,
-                'password' => $this->password,
-                'confirm' => $this->confirm,
-                'email' => $this->email,
-                'first_name' => $this->first_name,
-                'last_name' => $this->last_name,
-                'company_name' => $this->company_name,
-                'job_title' => $this->job_title,
-                'is_legal' => $this->is_legal,
-                'is_foreign' => $this->is_foreign,
-                'invited_by' => $this->invited_by,
-                'city_id' => $this->city_id,
-                'gender_id' => $this->gender_id,
-                'education' => $this->education_id,
-            ],
-            [
-                'phone' => ['required', 'regex:/^09\d{9}$/'],
-                'password' => ['required', 'min:3'],
-                'confirm' => ['required', 'min:3', 'same:password'],
-                'email' => ['nullable', 'email', 'max:255', 'unique:users,email'],
-                'first_name' => ['nullable', 'string', 'min:2', 'max:50'],
-                'last_name' => ['nullable', 'string', 'min:2', 'max:50'],
-                'company_name' => ['nullable', 'string', 'max:100'],
-                'job_title' => ['nullable', 'string', 'max:100'],
-                'is_legal' => ['nullable', 'boolean'],
-                'is_foreign' => ['nullable', 'boolean'],
-                'invited_by' => ['nullable', 'exists:users,id'],
-                'city_id' => ['nullable', 'exists:iran_cities,id'],
-                'gender_id' => ['nullable', 'integer', 'in:1,2'],
-                'education' => ['nullable', 'integer', 'in:0,1,2,3,4'],
-            ],
-            [
-                'phone.required' => 'شماره تلفن الزامی است.',
-                'phone.regex' => 'شماره باید ۱۱ رقم و با ۰۹ شروع شود.',
-                'password.required' => 'کلمه عبور الزامی است.',
-                'password.min' => 'کلمه عبور باید بیشتر از دو حرف باشد.',
-                'confirm.required' => 'تکرار کلمه عبور الزامی است.',
-                'confirm.min' => 'تکرار کلمه عبور باید بیشتر از دو حرف باشد.',
-                'confirm.same' => 'کلمه عبور با تکرارش همخوانی ندارد.',
-                'email.unique' => 'ایمیل قبلا ثبت شده است',
-                'email.email' => 'ایمیل وارد شده معتبر نیست.',
-                'first_name.min' => 'نام باید حداقل ۲ حرف باشد.',
-                'last_name.min' => 'نام خانوادگی باید حداقل ۲ حرف باشد.',
-                'invited_by.exists' => 'کاربر معرف معتبر نیست.',
-                'city_id.exists' => 'شناسه شهر معتبر نیست.',
-                'gender_id.in' => 'جنسیت انتخاب شده معتبر نیست.',
-                'education.in' => 'تحصیلات انتخاب شده معتبر نیست',
-                'education.integer' => 'کد تحصیلات نامعتبر است'
-            ]
-        );
-
-
-        if ($validated->fails()) {
-            $this->error($validated->errors()->first());
+        $input = [
+            'email' => $this->email,
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
+            'company_name' => $this->company_name,
+            'job_title' => $this->job_title,
+            'city_id' => $this->city_id,
+            'gender_id' => $this->gender_id,
+            'education' => $this->education_id,
+        ];                
+        
+        $result = UpdateUserService::handle($input);
+        
+        if (!$result['success']) {
+            $this->error($result['message']);
             return;
         }
 
-        try {
-            $this->user = User::firstOrCreate([
-                'first_name' => $this->first_name,
-                'last_name' => $this->last_name,
-                'company_name' => $this->company_name,
-                'job_title' => $this->job_title,
-                'phone' => $this->phone,
-                'email' => $this->email,
-                'password' => $this->password,
-                'is_legal' => $this->is_legal,
-                'is_foreign' => $this->is_foreign,
-                'invited_by' => $this->invited_by,
-                'city_id' => $this->city_id,
-                'gender_id' => $this->gender_id,
-                'education' => $this->education_id
+        $this->step = 6;
+    }
 
-            ]);
-            $this->success(" با موفقیت ثبت شد");
-            $this->step = 6;
-        }catch(\Exception $e) {
-            $this->error($e->getMessage());
-        }
-        
+    public function updatedIsLegal()
+    {
+        $this->user['is_legal'] = $this->is_legal;        
+        UpdateUserJob::dispatch(UserData::from($this->user));
+    }
+
+    public function updatedIsForeign()
+    {
+        info('is foreign');
+        $this->user['is_foreign'] = $this->is_foreign;        
+        UpdateUserJob::dispatch(UserData::from($this->user));
+    }
+
+    public function updatedAvatar()
+    {
+        if($this->user && $this->avatar) {
+            $user = User::find($this->user['id']);
+            $user->clearMediaCollection('avatar');
+            $user->addMedia($this->avatar)->toMediaCollection('avatar');
+        }        
     }
 
     public function render()
     {
-        return view('livewire.invitation');
+        return view('livewire.invitation.step'. $this->step);
     }
 }
