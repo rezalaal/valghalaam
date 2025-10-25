@@ -51,7 +51,7 @@
             <svg aria-label="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g stroke-linejoin="round" stroke-linecap="round" stroke-width="2" fill="none" stroke="currentColor"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></g></svg>
         </label>
     </div>
-    <div class="fixed bottom-0 left-0 w-full h-12 border-t border-gray-300 flex lg:hidden justify-evenly items-center pt-2">
+    <div class="fixed z-50 bg-white dark:bg-gray-950 bottom-0 left-0 w-full h-12 border-t border-gray-300 flex lg:hidden justify-evenly items-center pt-2">
         <a href="/profile" wire:navigate>
             <div class="flex flex-col justify-center items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 dark:text-white">
