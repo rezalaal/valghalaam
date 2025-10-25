@@ -191,21 +191,55 @@ class Invitation extends Component
 
     public function updatedAvatar()
     {
-        info("upload avatar start ".$this->avatar . " from userId: ".$this?->user['id']);
-        if($this->user && $this->avatar) {
-            $user = User::find($this->user['id']);
-            $user->clearMediaCollection('avatar');
-            try {
-                $result = $this->avatar->store(path: 'avatars');
-                info($result);
-                info("uploading avatar . . . ");
-                $user->addMedia($this->avatar)->toMediaCollection('avatar');
-            }catch(Exception $e){
-                info("error: ".$e->getMessage());
+        if (!$this->avatar) {
+            info("No avatar uploaded.");
+            return;
+        }
+
+        // اطلاعات فایل
+        info("Avatar file info:");
+        info("Name: ".$this->avatar->getClientOriginalName());
+        info("MimeType: ".$this->avatar->getClientMimeType());
+        info("Size: ".$this->avatar->getSize());
+        info("Is valid? ".($this->avatar->isValid() ? 'yes' : 'no'));
+        info("Temporary path: ".$this->avatar->getPathname());
+
+        try {
+            if (!$this->user || empty($this->user['id'])) {
+                info("No user set for avatar upload.");
+                return;
             }
-            
-        }        
+
+            $user = User::find($this->user['id']);
+            if (!$user) {
+                info("User not found with ID: ".$this->user['id']);
+                return;
+            }
+
+            // پاک کردن collection قدیمی
+            $user->clearMediaCollection('avatar');
+            info("Cleared previous avatar media.");
+
+            // بررسی دسترسی پوشه
+            $storagePath = storage_path('app/public/avatars');
+            if (!is_writable($storagePath)) {
+                info("Storage path not writable: ".$storagePath);
+            } else {
+                info("Storage path writable: ".$storagePath);
+            }
+
+            // آپلود واقعی
+            $user->addMedia($this->avatar->getPathname())
+                ->usingFileName($this->avatar->getClientOriginalName())
+                ->toMediaCollection('avatar');
+
+            info("Avatar uploaded successfully to media collection.");
+
+        } catch (\Exception $e) {
+            info("Error uploading avatar: ".$e->getMessage());
+        }
     }
+
 
     public function render()
     {

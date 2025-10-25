@@ -25,7 +25,7 @@ class Ambassadors extends Component
         $users = User::select('first_name', 'last_name', 'code', 'job_title')
             ->where(function ($q) {
                 $q->where('email', '<>', 'admin@local.tld')
-                  ->orWhereNull('email');
+                    ->orWhereNull('email');
             })
             ->when($this->search, function ($q) {
                 $q->where('last_name', 'like', '%'.$this->search.'%');

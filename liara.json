@@ -12,6 +12,10 @@
         {
             "name": "storage",
             "mountTo": "storage"
+        },
+        {
+            "name": "tmp",
+            "mountTo": "bootstrap/cache"
         }
     ],
     "cron": [
