@@ -3,7 +3,7 @@
         <x-form wire:submit="invite">
             <x-input label="کد معرف" wire:model="inviteCode" />
             <x-slot:actions>
-                <x-button label="عضویت در پویش" class="btn-primary" type="submit" spinner="save3" />
+                <x-button label="عضویت در پویش" class="btn-primary" type="submit" spinner="invite" />
             </x-slot:actions>
         </x-form>
     </div>
