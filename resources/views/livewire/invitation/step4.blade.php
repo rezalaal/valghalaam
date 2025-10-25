@@ -14,7 +14,7 @@
                 <h3 class="text-sm">لطفا یک تصویر پرسنلی مناسب بارگزاری کنید</h3>
                 <p class="text-sky-500">با کلیک روی تصویر می توانید این کار را انجام دهید</p>
             </div>
-            <x-file wire:model.live="avatar" accept="image/png, image/jpeg" class="flex">
+            <x-file wire:model.live="avatar" accept="image/png, image/jpeg, image/jpg" class="flex">
                 
                 <img src="{{ $avatar ?? '/images/avatar.png' }}" class="h-40 w-40 object-cover rounded-lg" />
                 <div wire:loading wire:target="avatar"
