@@ -13,7 +13,6 @@ class Header extends Component
     #[On('setThemeFromJs')]
     public function setTheme($savedTheme)
     {
-        info("theme changed to". $savedTheme);
         $this->theme = $savedTheme;
     }
 

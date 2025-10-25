@@ -63,13 +63,7 @@ class Invitation extends Component
 
     public function updatedProvinceId($value)
     {
-        info($value);
         $this->cities = IranCity::where('province_id', $value)->get();
-    }
-
-    public function updatedEducationId($value)
-    {
-        info($value);
     }
 
     public function goToStep2()
@@ -191,7 +185,6 @@ class Invitation extends Component
 
     public function updatedIsForeign()
     {
-        info('is foreign');
         $this->user['is_foreign'] = $this->is_foreign;        
         UpdateUserJob::dispatch(UserData::from($this->user));
     }
