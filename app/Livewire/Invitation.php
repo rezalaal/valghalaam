@@ -191,6 +191,7 @@ class Invitation extends Component
 
     public function updatedAvatar()
     {
+        info("upload avatar start ".$this->avatar . " from userId: ".$this?->user?->id);
         if($this->user && $this->avatar) {
             $user = User::find($this->user['id']);
             $user->clearMediaCollection('avatar');
