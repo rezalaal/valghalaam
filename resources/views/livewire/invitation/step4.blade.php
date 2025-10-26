@@ -17,7 +17,7 @@
             </div>
             <x-file wire:model.live="image" accept="image/png, image/jpeg, image/jpg" class="flex">
                 
-                <img src="{{ $avatar ?? '/images/avatar.png' }}" class="h-40 w-40 object-cover rounded-lg" />
+                <img src="{{ $avatar ?? asset('images/avatar.png') }}" class="h-40 w-40 object-cover rounded-lg" />
                 <div wire:loading wire:target="avatar"
                     class="absolute inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center rounded-lg">
                     <svg class="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
