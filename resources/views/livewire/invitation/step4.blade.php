@@ -6,6 +6,7 @@
     </x-steps>
     @auth           
     <x-form wire:submit="checkStatus" class="grid grid-cols-1">
+        @csrf
         <h3 class="text-lg font-black">مرحله چهارم - وضعیت و تصویر پروفایل</h3>
         <x-toggle label="شخصیت حقوقی هستم" wire:model.live="is_legal"/>
         <x-toggle label="خارج از کشور هستم" wire:model.live="is_foreign"/>
