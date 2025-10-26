@@ -10,11 +10,10 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->validateCsrfTokens(except:[
-            'livewire/upload-file'
-        ]);
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->validateCsrfTokens(except: ['*']); //TODO: should remove
     })
+
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
