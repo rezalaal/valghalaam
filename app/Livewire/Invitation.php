@@ -245,8 +245,8 @@ class Invitation extends Component
     {
         info('saved image');
 
-        $path = $this->image->store('photos'); 
-        $absolutePath = storage_path('app/private/' . $path);
+        $path = $this->image->store('photos');         
+        $absolutePath = storage_path('app/public/' . $path);
 
         $user = User::find($this->user['id']);
         if (!$user) {
