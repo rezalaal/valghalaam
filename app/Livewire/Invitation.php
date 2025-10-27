@@ -16,15 +16,11 @@ use App\Services\FindReferrerService;
 use App\Services\FindUserByPhoneService;
 use App\Services\UpdateUserService;
 use Exception;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 
 class Invitation extends Component
 {
     use Toast;
     use WithFileUploads;
-    public $image;
     public $id;
 
     public $step = 1;    
@@ -240,30 +236,6 @@ class Invitation extends Component
             info("Error uploading avatar: ".$e->getMessage());
         }
     }
-
-    public function updatedImage()
-    {
-        info('saved image');
-
-        $path = $this->image->store('photos');         
-        $absolutePath = storage_path('app/public/' . $path);
-
-        $user = User::find($this->user['id']);
-        if (!$user) {
-            info("User not found with ID: " . $this->user['id']);
-            return;
-        }
-
-        $user->clearMediaCollection('avatar');
-
-        $user->addMedia($absolutePath)
-            ->usingFileName($this->image->getClientOriginalName())
-            ->toMediaCollection('avatar');
-
-        info("Avatar uploaded successfully to media collection.");
-    }
-
-
 
     public function render()
     {

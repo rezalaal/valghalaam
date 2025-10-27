@@ -50,7 +50,7 @@ return [
     |
     */
 
-    'lazy_placeholder' => null, /*'livewire.placeholder',
+    'lazy_placeholder' => null,
 
     /*
     |---------------------------------------------------------------------------
@@ -74,7 +74,7 @@ return [
             'jpg', 'jpeg', 'mpga', 'webp', 'wma',
         ],
         'max_upload_time' => 5, // Max duration (in minutes) before an upload is invalidated...
-        'cleanup' => true,
+        'cleanup' => true, // Should cleanup temporary uploads older than 24 hrs...
     ],
 
     /*

@@ -6,7 +6,6 @@
     </x-steps>
     @auth           
     <x-form wire:submit="checkStatus" class="grid grid-cols-1">
-        @csrf
         <h3 class="text-lg font-black">مرحله چهارم - وضعیت و تصویر پروفایل</h3>
         <x-toggle label="شخصیت حقوقی هستم" wire:model.live="is_legal"/>
         <x-toggle label="خارج از کشور هستم" wire:model.live="is_foreign"/>
@@ -15,8 +14,7 @@
                 <h3 class="text-sm">لطفا یک تصویر پرسنلی مناسب بارگزاری کنید</h3>
                 <p class="text-sky-500">با کلیک روی تصویر می توانید این کار را انجام دهید</p>
             </div>
-            <x-file wire:model.live="image" accept="image/png, image/jpeg, image/jpg" class="flex">
-                
+            <x-file wire:model.live="avatar" accept="image/png, image/jpeg, image/jpg" class="flex">
                 <img src="{{ $avatar ?? asset('images/avatar.png') }}" class="h-40 w-40 object-cover rounded-lg" />
                 <div wire:loading wire:target="avatar"
                     class="absolute inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center rounded-lg">
