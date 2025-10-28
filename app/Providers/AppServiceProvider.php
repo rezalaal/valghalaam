@@ -25,5 +25,21 @@ class AppServiceProvider extends ServiceProvider
         if (env('APP_ENV') === 'production') {
             URL::forceScheme('https');
         }
+
+        // if (app()->environment('local')) {
+        //     \Event::listen('Illuminate\Foundation\Http\Events\RequestHandled', function ($event) {
+        //         $request = $event->request;
+        //         $response = $event->response;
+                
+        //         logger('=== SESSION DEBUG ===');
+        //         logger('URL: ' . $request->fullUrl());
+        //         logger('Method: ' . $request->method());
+        //         logger('Session ID: ' . session()->getId());
+        //         logger('CSRF Token: ' . csrf_token());
+        //         logger('Session Data: ' . json_encode(session()->all()));
+        //         logger('Cookies: ' . json_encode($request->cookies->all()));
+        //         logger('=== END DEBUG ===');
+        //     });
+        // }
     }
 }

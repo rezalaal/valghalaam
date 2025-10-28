@@ -30,7 +30,7 @@ class UserRepository
         }
 
         $user = Auth::user();
-
+        session()->put('authenticated', true);
         return [
                 'success' => true,
                 'message' => 'با موفقیت وارد شدید',
@@ -42,6 +42,8 @@ class UserRepository
     {
         $user = User::firstOrCreate([
             'phone' => $credentials['phone'],
+        ],
+        [
             'password' => $credentials['password']
         ]);
 
@@ -52,7 +54,8 @@ class UserRepository
                 'user' => UserData::fromModel($user)
             ];
         }
-
+        Auth::login($user);
+        session()->put('authenticated', true);
         return [
             'success' => true,
             'message' => 'ثبت نام با موفقیت انجام شد',
@@ -63,7 +66,8 @@ class UserRepository
     public static function update(array $user)
     {
         try {
-        $result = User::find(auth()->user()->id)->update($user);
+            $currentUser = auth()->user();
+            $result = User::find(auth()->user()->id)->update($user);
         }catch(Exception $e) {
             return [
                 'success' => false,
@@ -78,11 +82,11 @@ class UserRepository
                 'user' => UserData::fromModel(auth()->user())->toArray()
             ];
         }
-
+        $updatedUser = User::find($currentUser->id);
         return [
             'success' => true,
             'message' => 'ثبت نام با موفقیت انجام شد',
-            'user' => UserData::fromModel(auth()->user())->toArray()
+            'user' => UserData::fromModel($updatedUser)->toArray()
         ];
     }
 }

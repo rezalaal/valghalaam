@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     
     const savedTheme = localStorage.getItem('theme') || 'light';
-    console.log(savedTheme)
+    
     Livewire.dispatch('setThemeFromJs',{savedTheme: savedTheme});
     applyTheme(savedTheme);
 

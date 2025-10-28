@@ -147,7 +147,7 @@ class Invitation extends Component
             return;
         }
 
-        $this->user = $result['user'];
+        $this->user = $result['user'];        
         $this->step = 4;
     }
 
