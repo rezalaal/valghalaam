@@ -55,12 +55,15 @@ class Invitation extends Component
     public function mount($code, FindReferrerService $findReferrer)
     {
         $this->referrer = $findReferrer->handle($code);
-        $this->invited_by = $code;        
+        $this->invited_by = $code;    
     }        
 
     public function updatedProvinceId($value)
     {
         $this->cities = IranCity::where('province_id', $value)->get();
+        if ($this->cities->isNotEmpty()) {
+            $this->city_id = $this->cities->first()->id;
+        }
     }
 
     public function goToStep2()
@@ -73,9 +76,9 @@ class Invitation extends Component
     public function checkPassword(LoginUserByPhoneService $service)
     {
         $result = $service->create([
-            'phone' => $this->phone,
-            'password' => $this->password,
-            'password_confirmation' => $this->password_confirmation,
+            'phone' => english($this->phone),
+            'password' => english($this->password),
+            'password_confirmation' => english($this->password_confirmation),
             'invited_by' => $this->invited_by
         ]);        
 
@@ -96,7 +99,7 @@ class Invitation extends Component
 
     public function checkPhone(FindUserByPhoneService $service)
     {
-        $result = $service->handle($this->phone);
+        $result = $service->handle(english($this->phone));
 
         if (!$result['success']) {
             $this->error($result['message']);
@@ -130,16 +133,33 @@ class Invitation extends Component
         $this->avatar = $userData->avatar;
         $this->city_id = $userData->city_id;
         $this->gender_id = $userData->gender_id;
-        // $this->education = $userData->education;
         $this->provinces = IranProvince::all();
         $this->education = Education::all();
+        
+        if ($this->city_id) {
+            $city = IranCity::find($this->city_id);
+            if ($city) {
+                $this->province_id = $city->province_id;
+                $this->cities = IranCity::where('province_id', $city->province_id)->get();
+            }
+        } else {            
+            $this->cities = collect();
+        }
+
+        if (!empty($userData->education)) {
+            $this->education_id = $userData->education;
+        } elseif (!empty($this->education)) {
+            $this->education_id = $this->education[0]['id'];
+        }
+
     }
 
     public function login(LoginUserByPhoneService $service)
     {
         $result = $service->handle([            
-            'phone' => $this->user['phone'],
-            'password' => $this->password,
+            'phone' => english($this->user['phone']),
+            'password' => english($this->password),
+            'invited_by' => $this->invited_by
         ]);        
 
         if (!$result['success']) {
@@ -171,7 +191,8 @@ class Invitation extends Component
             return;
         }
 
-        $this->step = 6;
+        // $this->step = 6;
+        return redirect()->to('/profile');
     }
 
     public function updatedIsLegal()
@@ -189,48 +210,27 @@ class Invitation extends Component
     public function updatedAvatar()
     {
         if (!$this->avatar) {
-            info("No avatar uploaded.");
             return;
         }
 
-        // اطلاعات فایل
-        info("Avatar file info:");
-        info("Name: ".$this->avatar->getClientOriginalName());
-        info("MimeType: ".$this->avatar->getClientMimeType());
-        info("Size: ".$this->avatar->getSize());
-        info("Is valid? ".($this->avatar->isValid() ? 'yes' : 'no'));
-        info("Temporary path: ".$this->avatar->getPathname());
 
         try {
             if (!$this->user || empty($this->user['id'])) {
-                info("No user set for avatar upload.");
                 return;
             }
 
             $user = User::find($this->user['id']);
             if (!$user) {
-                info("User not found with ID: ".$this->user['id']);
                 return;
             }
 
             // پاک کردن collection قدیمی
             $user->clearMediaCollection('avatar');
-            info("Cleared previous avatar media.");
-
-            // بررسی دسترسی پوشه
-            $storagePath = storage_path('app/public/avatars');
-            if (!is_writable($storagePath)) {
-                info("Storage path not writable: ".$storagePath);
-            } else {
-                info("Storage path writable: ".$storagePath);
-            }
 
             // آپلود واقعی
             $user->addMedia($this->avatar->getPathname())
                 ->usingFileName($this->avatar->getClientOriginalName())
                 ->toMediaCollection('avatar');
-
-            info("Avatar uploaded successfully to media collection.");
 
         } catch (\Exception $e) {
             info("Error uploading avatar: ".$e->getMessage());

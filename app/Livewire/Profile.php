@@ -25,10 +25,11 @@ class Profile extends Component
 
     public function login()
     {
+        
         $result = (new LoginUserByPhoneService())->handle([
-            'phone' => $this->phone,
-            'password' => $this->password
-        ]);
+            'phone' => english($this->phone),
+            'password' => english($this->password),
+        ], requiredInvitedBy:false);
         
         if(!$result['success']) {
             $this->error($result['message']);

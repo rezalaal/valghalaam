@@ -22,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Blade::directive('farsi', fn($exp) => "<?php echo farsi($exp); ?>");
+
         if (env('APP_ENV') === 'production') {
             URL::forceScheme('https');
         }
