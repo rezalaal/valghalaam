@@ -27,6 +27,9 @@ class ReferrerName
             return new self(null, null);
         }
         
-        return new self($code->user->first_name, $code->user->last_name);
+        if(!$code->user) {
+            return new self("سفیر", "پویش");
+        }
+        return new self($code->user?->first_name, $code->user?->last_name);
     }
 }
