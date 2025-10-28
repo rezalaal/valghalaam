@@ -21,15 +21,22 @@ class UserRepository
 
     public static function loginByPhone(array $credentials): array
     {
-        if (!Auth::attempt($credentials)) {
+        if (!Auth::attempt([
+            'phone' => $credentials['phone'],
+            'password' => $credentials['password']
+        ])) {
             return [
                 'success' => false,
                 'message' => 'رمز عبور نادرست است',
                 'user' => null
             ];
         }
-
         $user = Auth::user();
+        if($credentials['invited_by']){
+            $user->invited_by = $credentials['invited_by'];
+            $user->save();
+        }
+        
         session()->put('authenticated', true);
         return [
                 'success' => true,
@@ -44,7 +51,8 @@ class UserRepository
             'phone' => $credentials['phone'],
         ],
         [
-            'password' => $credentials['password']
+            'password' => $credentials['password'],
+            'invited_by' => $credentials['invited_by']
         ]);
 
         if(!$user) {

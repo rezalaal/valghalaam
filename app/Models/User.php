@@ -28,7 +28,7 @@ class User extends Authenticatable implements FilamentUser, HasName, HasMedia
      * @var list<string>
      */
     protected $fillable = [
-        'code',
+        // 'code',
         'first_name',
         'last_name',
         'company_name',
@@ -125,5 +125,14 @@ class User extends Authenticatable implements FilamentUser, HasName, HasMedia
             : null;
     }
 
+    public function code()
+    {
+        return $this->hasOne(Code::class);
+    }
+
+    public function getCodeValueAttribute():?string
+    {
+        return $this->code?->code;
+    }
 
 }

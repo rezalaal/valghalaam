@@ -2,6 +2,7 @@
 
 namespace App\ValueObjects;
 
+use App\Models\Code;
 use App\Models\User;
 
 class ReferrerName
@@ -20,12 +21,12 @@ class ReferrerName
         return trim("{$this->first_name} {$this->last_name}");
     }
 
-    public static function fromUser(?User $user): self
+    public static function fromCode(?Code $code): self
     {
-        if (!$user) {
+        if (!$code) {            
             return new self(null, null);
         }
-
-        return new self($user->first_name, $user->last_name);
+        
+        return new self($code->user->first_name, $code->user->last_name);
     }
 }

@@ -7,14 +7,16 @@ use Illuminate\Support\Facades\Validator;
 
 class LoginUserByPhoneService
 {
-    public function handle(array $input): array
+    public function handle(array $input, bool $requiredInvitedBy = true): array
     {
-        $validator = Validator::make(
-            $input,
-            [
+        $rules = [
                 'phone' => ['required', 'regex:/^09\d{9}$/'],
                 'password' => ['required', 'min:3'],
-            ],
+        ];
+
+        $validator = Validator::make(
+            $input,
+            $rules,
             [
                 'phone.required' => 'شماره تلفن الزامی است.',
                 'phone.regex' => 'شماره باید ۱۱ رقم و با ۰۹ شروع شود.',
@@ -22,6 +24,10 @@ class LoginUserByPhoneService
                 'password.min' => 'کلمه عبور باید بیشتر از دو حرف باشد.',
             ]
         );
+
+        if($requiredInvitedBy) {
+            $rules['invited_by'] = ['required', 'integer'];
+        }
 
         if ($validator->fails()) {
             return [
@@ -34,6 +40,7 @@ class LoginUserByPhoneService
         $credentials = [
             'phone' => $input['phone'],
             'password' => $input['password'],
+            'invited_by' => isset($input['invited_by']) ? $input['invited_by'] : null,
         ];
 
         return UserRepository::loginByPhone($credentials);
@@ -79,6 +86,7 @@ class LoginUserByPhoneService
         $credentials = [
             'phone' => $input['phone'],
             'password' => $input['password'],
+            'invited_by' => $input['invited_by']
         ];
 
         return UserRepository::create($credentials);

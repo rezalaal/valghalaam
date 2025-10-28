@@ -12,7 +12,7 @@ trait InviteTrait
         $data = ['code' => $this->inviteCode];
 
         $validator = Validator::make($data, [
-            'code' => ['required', 'integer', 'exists:users,code'],
+            'code' => ['required', 'integer', 'exists:codes,code'],
         ]);
 
         if ($validator->fails()) {

@@ -40,7 +40,8 @@
                 wire:model="city_id"
                 :options="$cities"
                 option-value="id"
-                option-label="name" />
+                option-label="name" 
+            />
         @endif            
         <x-input class="px-1" label=" عنوان شغلی" prefix="0" wire:model="job_title" placeholder="عنوان شغلی" />
         <x-input class="px-1" label="  ایمیل" prefix="0" wire:model="email" placeholder="ایمیل " />            

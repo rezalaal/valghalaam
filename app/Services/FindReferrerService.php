@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Code;
 use App\ValueObjects\ReferrerName;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Validator;
@@ -13,20 +14,18 @@ class FindReferrerService
     ){}
 
     public function handle(int $code): ?string
-    {
-        // 1. validate
+    {                
+
         $validator = Validator::make(['code' => $code], [
-            'code' => ['required', 'integer', 'exists:users,code'],
+            'code' => ['required', 'integer', 'exists:codes,code'],
         ]);
 
-        if ($validator->fails()) {
+        if ($validator->fails()) {            
             return null;
-        }
+        }        
 
-        // 2. find user
-        $user = $this->users->findByCode((int) $code);
-
-        // 3. build display name
-        return ReferrerName::fromUser($user)->full();
+        $code = Code::where('code', $code)->first();                
+        
+        return ReferrerName::fromCode($code)->full();
     }
 }
