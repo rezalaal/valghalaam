@@ -13,7 +13,7 @@ class FindReferrerService
         protected UserRepository $users
     ){}
 
-    public function handle(int $code): ?string
+    public function handle(int $code): ReferrerName|null
     {                
 
         $validator = Validator::make(['code' => $code], [
@@ -26,6 +26,6 @@ class FindReferrerService
 
         $code = Code::where('code', $code)->first();                
         
-        return ReferrerName::fromCode($code)->full();
+        return ReferrerName::fromCode($code);
     }
 }

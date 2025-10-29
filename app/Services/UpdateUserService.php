@@ -60,6 +60,7 @@ class UpdateUserService
             'city_id' => $input['city_id'],
             'gender_id' => $input['gender_id'],
             'education' => $input['education'],
+            'invited_by' => $input['invited_by']
         ];
 
         return UserRepository::update($credentials);

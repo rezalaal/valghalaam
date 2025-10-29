@@ -54,8 +54,8 @@ class Invitation extends Component
 
     public function mount($code, FindReferrerService $findReferrer)
     {
-        $this->referrer = $findReferrer->handle($code);
-        $this->invited_by = $code;    
+        $this->referrer = $findReferrer->handle($code)->full();
+        $this->invited_by = $findReferrer->handle($code)->id();    
     }        
 
     public function updatedProvinceId($value)
@@ -136,6 +136,7 @@ class Invitation extends Component
         $this->provinces = IranProvince::all();
         $this->education = Education::all();
         
+        
         if ($this->city_id) {
             $city = IranCity::find($this->city_id);
             if ($city) {
@@ -182,6 +183,7 @@ class Invitation extends Component
             'city_id' => $this->city_id,
             'gender_id' => $this->gender_id,
             'education' => $this->education_id,
+            'invited_by' => $this->invited_by
         ];                
         
         $result = UpdateUserService::handle($input);
