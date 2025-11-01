@@ -5,7 +5,7 @@
     </div>
     @php    
         $headers = [
-            ['key' => 'code', 'label' => 'کد سفیر'],
+            ['key' => 'code_value', 'label' => 'کد سفیر'],
             ['key' => 'first_name', 'label' => 'نام'],
             ['key' => 'last_name', 'label' => 'نام خانوادگی'],
             ['key' => 'job_title', 'label' => 'شغل/پست']

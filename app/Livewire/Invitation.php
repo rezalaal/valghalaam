@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Data\UserData;
 use App\Enums\Education;
 use App\Jobs\UpdateUserJob;
+use App\Models\Code;
 use App\Models\User;
 use App\Services\LoginUserByPhoneService;
 use Livewire\WithFileUploads;
@@ -53,9 +54,14 @@ class Invitation extends Component
     public $avatar;
 
     public function mount($code, FindReferrerService $findReferrer)
-    {
-        $this->referrer = $findReferrer->handle($code)->full();
-        $this->invited_by = $findReferrer->handle($code)->id();    
+    {       
+        $this->referrer = $findReferrer->handle($code)?->full();        
+        $this->invited_by = $findReferrer->handle($code)?->id();
+        if(auth()->user()) {
+            $this->avatar = auth()->user()->getFirstMediaUrl('avatar');
+            $this->step = 4;
+            return;
+        }
     }        
 
     public function updatedProvinceId($value)
@@ -69,6 +75,9 @@ class Invitation extends Component
     public function goToStep2()
     {
         if($this->referrer) {
+            if(auth()->user()) {
+                $this->prepareUserDTO(UserData::fromModel(auth()->user()));
+            }            
             $this->step = 2;
         }
     }
@@ -94,6 +103,10 @@ class Invitation extends Component
 
     public function checkStatus()
     {
+        if(auth()->user()) {
+            $this->prepareUserDTO(UserData::fromModel(auth()->user()));
+        }
+        
         $this->step = 5;
     }
 
@@ -193,9 +206,38 @@ class Invitation extends Component
             return;
         }
 
+        $this->addCodeProcess($result['user']);
+
         // $this->step = 6;
         return redirect()->to('/profile');
     }
+
+    protected function addCodeProcess($user): void
+    {
+        if (empty($user['id'])) {
+            return;
+        }
+
+        $safir = User::find($user['id']);
+        if (!$safir) {
+            return;
+        }
+
+        if (Code::where('user_id', $safir->id)->exists()) {
+            return;
+        }
+
+        $safirCode = Code::whereNull('user_id')
+            ->where('is_reserved', false)
+            ->first();
+
+        if (!$safirCode) {
+            return;
+        }
+
+        $safirCode->update(['user_id' => $safir->id]);
+    }
+
 
     public function updatedIsLegal()
     {
@@ -233,7 +275,7 @@ class Invitation extends Component
             $user->addMedia($this->avatar->getPathname())
                 ->usingFileName($this->avatar->getClientOriginalName())
                 ->toMediaCollection('avatar');
-
+            
         } catch (\Exception $e) {
             info("Error uploading avatar: ".$e->getMessage());
         }

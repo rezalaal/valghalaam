@@ -135,4 +135,10 @@ class User extends Authenticatable implements FilamentUser, HasName, HasMedia
         return $this->code?->code;
     }
 
+    public function getInviterCodeValueAttribute(): ?string
+    {
+        return $this->inviter?->code?->code;
+    }
+
+
 }

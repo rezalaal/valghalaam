@@ -75,7 +75,7 @@ class UserRepository
     {
         try {
             $currentUser = auth()->user();
-            $result = User::find(auth()->user()->id)->update($user);
+            $result = User::find(auth()->user()->id)->update($user);            
         }catch(Exception $e) {
             return [
                 'success' => false,
@@ -91,6 +91,7 @@ class UserRepository
             ];
         }
         $updatedUser = User::find($currentUser->id);
+        
         return [
             'success' => true,
             'message' => 'ثبت نام با موفقیت انجام شد',

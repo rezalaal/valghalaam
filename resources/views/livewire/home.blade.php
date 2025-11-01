@@ -7,7 +7,7 @@
             </x-slot:actions>
         </x-form>
     </div>
-    <div class="mx-8 col-span-4 mt-4">
+    <div class="mx-8 col-span-4 mt-4 mb-20">
         <livewire:ambassadors>
     </div>
 </div>

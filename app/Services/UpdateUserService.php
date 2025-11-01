@@ -20,6 +20,7 @@ class UpdateUserService
                 'city_id' => $input['city_id'],
                 'gender_id' => $input['gender_id'],
                 'education' => $input['education'],
+                'invited_by' => $input['invited_by']
             ],
             [
                 'email' => ['nullable', 'email', 'max:255', Rule::unique('users', 'email')->ignore(auth()->user()->id)],
@@ -62,7 +63,7 @@ class UpdateUserService
             'education' => $input['education'],
             'invited_by' => $input['invited_by']
         ];
-
+        
         return UserRepository::update($credentials);
     }
 }

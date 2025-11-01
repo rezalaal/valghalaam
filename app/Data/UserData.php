@@ -9,7 +9,7 @@ class UserData extends Data
 {
     public function __construct(
         public ?int $id,
-        public ?int $code,
+        // public ?int $code,
         public ?string $first_name,
         public ?string $last_name,
         public ?string $company_name,
@@ -30,7 +30,7 @@ class UserData extends Data
     {
         return new self(
             id: $user->id,
-            code: $user->code,
+            // code: $user->code,
             first_name: $user->first_name,
             last_name: $user->last_name,
             company_name: $user->company_name,

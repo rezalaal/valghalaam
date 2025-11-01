@@ -22,7 +22,7 @@ class Ambassadors extends Component
 
     public function render()
     {
-        $users = User::select('first_name', 'last_name', 'code', 'job_title')
+        $users = User::select('first_name', 'last_name', 'code_value', 'job_title')
             ->where(function ($q) {
                 $q->where('email', '<>', 'admin@local.tld')
                     ->orWhereNull('email');
