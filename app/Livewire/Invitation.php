@@ -235,7 +235,7 @@ class Invitation extends Component
             return;
         }
 
-        $safirCode->update(['user_id' => $safir->id]);
+        $safirCode->update(['user_id' => $safir->id, 'is_reserved' => true]);
     }
 
 

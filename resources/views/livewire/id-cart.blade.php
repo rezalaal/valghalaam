@@ -7,12 +7,15 @@
                     <div class="w-[30%] bg-ghalam p-2 flex flex-col justify-evenly">
                         <img src="{{ $user->getFirstMediaUrl('avatar')}}" class="rounded-lg object-cover">
                         <p class="text-black text-center p-2 font-black text-xs" >{{ $user->first_name }} {{ $user->last_name }}</p>
+                        <p class="text-black text-center text-xs">{{ $user->city->province->name }}</p>
+                        <p class="text-black text-center text-xs">{{ $user->city->name }}</p>
                     </div>
                     <div class="w-[70%] flex flex-col justify-center gap-1 items-center">
-                        <h1 class="text-ghalam text-xl font-lalezar">من در بین خطوط خردمندانه می رانم</h1>    
-                        <button class="bg-ghalam px-4 py-1 rounded-lg text-sm font-lalezar">کد سفیر</button>
-                        <p class="text-ghalam font-black text-3xl">{{ $user->code_value }}</p>
-                        <p class="text-ghalam">{{ $user->city->province->name }} :: {{ $user->city->name }}</p>
+                        <h1 class="text-ghalam text-xs text-center font-lalezar">من در بین خطوط با فاصله و خردمندانه می رانم</h1>    
+                        <div class="flex flex-col gap-2">
+                            <button class="bg-ghalam px-4 py-1 rounded-lg text-sm font-lalezar">کد سفیر {{ $user->is_legal ? 'حقیقی' : 'حقوقی'}}</button>
+                            <p class="text-ghalam text-center font-black text-3xl">{{ $user->code_value }}</p> \
+                        </div>  
                         <p class="text-ghalam font-lalezar">سفیر پویش رانندگی ایمن {{ $user->job_title }}</p>
                     </div>                    
                 </div>
@@ -34,7 +37,7 @@
                     <p dir="rtl" class="text-[10px] pt-1 px-1">تاریخ عضویت {{ verta($user->created_at)->format('Y/m/d')}}</p>
                 </div>
             </div>
-            <a href="/i/{{ $user->code_value }}" class="mt-2 underline text-sky-800">{{ env('APP_URL')}}/i/{{$user->code_value}}</a>
+            <a href="{{ config('app.url')}}/i/{{ $user->code_value }}" class="mt-2 underline text-sky-800">{{ config('app.url')}}/i/{{$user->code_value}}</a>
         </div>
     @else        
         <div class="flex flex-col gap-4" dir="rtl">
